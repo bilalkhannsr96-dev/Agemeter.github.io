@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Age Calculator - Years, Months & Days</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+
+    .input-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #555;
+      text-align: left;
+    }
+
+    input[type="date"] {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+
+    input[type="date"]:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #5a6fd8;
+      transform: translateY(-2px);
+    }
+
+    .result {
+      margin-top: 30px;
+      padding: 25px;
+      background: #f8f9ff;
+      border-radius: 15px;
+      display: none;
+    }
+
+    .result.show {
+      display: block;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .age-display {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .age-box {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      min-width: 120px;
+      flex: 1;
+    }
+
+    .age-box h3 {
+      font-size: 32px;
+      color: #667eea;
+      margin-bottom: 5px;
+    }
+
+    .age-box p {
+      color: #888;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .error {
+      color: #e74c3c;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎂 Age Calculator</h1>
+    <p style="color:#666; margin-bottom: 20px;">Enter your date of birth to calculate your exact age</p>
+
+    <div class="input-group">
+      <label for="dob">Date of Birth</label>
+      <input type="date" id="dob" required>
+    </div>
+
+    <button onclick="calculateAge()">Calculate Age</button>
+    <p class="error" id="error"></p>
+
+    <div class="result" id="result">
+      <h2>Your Age</h2>
+      <div class="age-display">
+        <div class="age-box">
+          <h3 id="years">0</h3>
+          <p>Years</p>
+        </div>
+        <div class="age-box">
+          <h3 id="months">0</h3>
+          <p>Months</p>
+        </div>
+        <div class="age-box">
+          <h3 id="days">0</h3>
+          <p>Days</p>
+        </div>
+      </div>
+      <p style="margin-top: 20px; color: #888; font-size: 14px;">
+        Total days lived: <strong id="totalDays">0</strong>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    function calculateAge() {
+      const dob = document.getElementById('dob').value;
+      const error = document.getElementById('error');
+      const result = document.getElementById('result');
+
+      // Reset
+      error.textContent = '';
+      result.classList.remove('show');
+
+      if (!dob) {
+        error.textContent = 'Please select your date of birth!';
+        return;
+      }
+
+      const birthDate = new Date(dob);
+      const today = new Date();
+
+      // Check if date is in the future
+      if (birthDate > today) {
+        error.textContent = 'Date of birth cannot be in the future!';
+        return;
+      }
+
+      let years = today.getFullYear() - birthDate.getFullYear();
+      let months = today.getMonth() - birthDate.getMonth();
+      let days = today.getDate() - birthDate.getDate();
+
+      // Adjust if days are negative
+      if (days < 0) {
+        months--;
+        const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+        days += lastMonth.getDate();
+      }
+
+      // Adjust if months are negative
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+
+      // Calculate total days lived
+      const diffTime = Math.abs(today - birthDate);
+      const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      // Update display
+      document.getElementById('years').textContent = years;
+      document.getElementById('months').textContent = months;
+      document.getElementById('days').textContent = days;
+      document.getElementById('totalDays').textContent = totalDays.toLocaleString();
+
+      result.classList.add('show');
+    }
+
+    // Auto-calculate when pressing Enter
+    document.getElementById('dob').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        calculateAge();
+      }
+    });
+  </script>
+</body>
+</html>
